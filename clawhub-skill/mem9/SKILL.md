@@ -67,7 +67,7 @@ Step labels:
 - `[AGENT]` — steps you perform directly (file edits, curl, shell)
 - `[HUMAN]` — steps the user must perform (restart OpenClaw, browser actions)
 
-1. **Provision tenant** — `[AGENT]` run `curl -sX POST https://api.mem9.ai/v1alpha1/mem9s | jq .`, save `id` as `TENANT_ID`. `[HUMAN]` open `claim_url` in a browser before `expires_at` — unclaimed tenants are destroyed at expiry.
+1. **Provision tenant** — `[AGENT]` run `curl -sX POST https://api.mem9.ai/v1alpha1/mem9s | jq .`, save `id` as `TENANT_ID`.
 2. **Install plugin** — `[AGENT]` run `openclaw plugins install @mem9/openclaw`
 3. **Configure `openclaw.json`** — `[AGENT]` patch in `plugins.slots.memory = "mnemo"` and `plugins.entries.mnemo` with your `apiUrl` and `tenantID`
 4. **Restart** — `[HUMAN]` restart OpenClaw
@@ -113,8 +113,6 @@ test -n "$TENANT_ID" && test "$TENANT_ID" != "null" \
 ```
 
 **Verify**: `$TENANT_ID` is a non-empty UUID string.
-
-`[HUMAN]` **Claim your tenant**: Open the `claim_url` from the response in a browser **before** `expires_at`. Unclaimed tenants are destroyed at expiry. There is no renewal API.
 
 If self-hosted, replace `API_URL` with your server's base URL.
 

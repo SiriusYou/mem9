@@ -80,8 +80,7 @@ func NewTenantService(
 
 // ProvisionResult is the output of Provision.
 type ProvisionResult struct {
-	ID       string `json:"id"`
-	ClaimURL string `json:"claim_url,omitempty"`
+	ID string `json:"id"`
 }
 
 // Provision creates a new TiDB Zero instance and registers it as a tenant.
@@ -100,19 +99,20 @@ func (s *TenantService) Provision(ctx context.Context) (*ProvisionResult, error)
 	tenantID := instance.ID
 
 	t := &domain.Tenant{
-		ID:            tenantID,
-		Name:          tenantID, // Use ID as name for auto-provisioned tenants.
-		DBHost:        instance.Host,
-		DBPort:        instance.Port,
-		DBUser:        instance.Username,
-		DBPassword:    instance.Password,
-		DBName:        "test",
-		DBTLS:         true,
-		Provider:      "tidb_zero",
-		ClusterID:     instance.ID,
-		ClaimURL:      instance.ClaimURL,
-		Status:        domain.TenantProvisioning,
-		SchemaVersion: 0,
+		ID:             tenantID,
+		Name:           tenantID, // Use ID as name for auto-provisioned tenants.
+		DBHost:         instance.Host,
+		DBPort:         instance.Port,
+		DBUser:         instance.Username,
+		DBPassword:     instance.Password,
+		DBName:         "test",
+		DBTLS:          true,
+		Provider:       "tidb_zero",
+		ClusterID:      instance.ID,
+		ClaimURL:       instance.ClaimURL,
+		ClaimExpiresAt: instance.ClaimExpiresAt,
+		Status:         domain.TenantProvisioning,
+		SchemaVersion:  0,
 	}
 	if err := s.tenants.Create(ctx, t); err != nil {
 		return nil, fmt.Errorf("create tenant record: %w", err)
@@ -133,8 +133,7 @@ func (s *TenantService) Provision(ctx context.Context) (*ProvisionResult, error)
 	}
 
 	return &ProvisionResult{
-		ID:       tenantID,
-		ClaimURL: instance.ClaimURL,
+		ID: tenantID,
 	}, nil
 }
 
@@ -163,7 +162,6 @@ func (s *TenantService) GetInfo(ctx context.Context, tenantID string) (*domain.T
 		Name:        t.Name,
 		Status:      t.Status,
 		Provider:    t.Provider,
-		ClaimURL:    t.ClaimURL,
 		MemoryCount: count,
 		CreatedAt:   t.CreatedAt,
 	}, nil

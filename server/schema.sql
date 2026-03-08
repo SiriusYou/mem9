@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS tenants (
   provider        VARCHAR(50)   NOT NULL,
   cluster_id      VARCHAR(255)  NULL,
   claim_url       TEXT          NULL,
+  claim_expires_at TIMESTAMP    NULL,
   status          VARCHAR(20)   NOT NULL DEFAULT 'provisioning'
                   COMMENT 'provisioning|active|suspended|deleted',
   schema_version  INT           NOT NULL DEFAULT 1,
@@ -34,7 +35,7 @@ CREATE TABLE IF NOT EXISTS tenant_tokens (
 -- Tenant data plane schema (per-tenant TiDB Serverless).
 CREATE TABLE IF NOT EXISTS memories (
   id              VARCHAR(36)     PRIMARY KEY,
-  content         TEXT            NOT NULL,
+  content         MEDIUMTEXT      NOT NULL,
   source          VARCHAR(100),
   tags            JSON,
   metadata        JSON,
