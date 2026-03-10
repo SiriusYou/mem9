@@ -11,6 +11,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
+const unmatchedRouteLabel = "unmatched"
+
 var (
 	// HTTPRequestsTotal counts requests by method, route pattern, and status code.
 	HTTPRequestsTotal = promauto.NewCounterVec(
@@ -44,15 +46,23 @@ func Middleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(ww, r)
 
-		route := chi.RouteContext(r.Context()).RoutePattern()
-		if route == "" {
-			route = r.URL.Path
-		}
-
 		status := strconv.Itoa(ww.Status())
 		duration := time.Since(start).Seconds()
+		route := routeLabel(r)
 
 		HTTPRequestsTotal.WithLabelValues(r.Method, route, status).Inc()
 		HTTPRequestDuration.WithLabelValues(r.Method, route).Observe(duration)
 	})
+}
+
+func routeLabel(r *http.Request) string {
+	routeCtx := chi.RouteContext(r.Context())
+	if routeCtx == nil {
+		return unmatchedRouteLabel
+	}
+	route := routeCtx.RoutePattern()
+	if route == "" {
+		return unmatchedRouteLabel
+	}
+	return route
 }
